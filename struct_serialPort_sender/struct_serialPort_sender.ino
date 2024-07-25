@@ -19,13 +19,25 @@ typedef struct struct_Data
 
 struct_Data myData;
 
+
+typedef struct struct_In
+{
+  uint8_t count;
+  uint8_t res;
+} struct_In;
+
+struct_In inData;
+
 void sendStructure(byte *structurePointer, int structureLength)
 {
-      SerialPort.write(structurePointer, structureLength);
-//  Serial.write(structurePointer, structureLength);
+  SerialPort.write(structurePointer, structureLength);
 }
 
-
+void recieveStructure(byte *structurePointer, int structureLength)
+{
+  if (SerialPort.available() < sizeof(inData)) return;
+  SerialPort.readBytes(structurePointer, structureLength);
+}
 float countSend;
 void setup()
 {
@@ -42,7 +54,7 @@ void setup()
   myData.ZX   = 6;
   myData.FOG  = 7;
   myData.BATT = 8;
-  
+
   delay(100);
 
 }
@@ -50,23 +62,29 @@ void setup()
 void loop()
 {
 
+
   if ((millis() - countSend) / 1000 > 5) {
     sendStructure((byte*)&myData, sizeof(myData));
     delay(500);
     countSend = millis();
 
-    myData.LG   += 1;
-    myData.PG   += 1;
-    myData.LP   += 1;
-    myData.PP   += 1;
-    myData.STOP += 1;
-    myData.ZX   += 1;
-    myData.FOG  += 1;
-    myData.BATT += 1;
+    //    myData.LG   += 1;
+    //    myData.PG   += 1;
+    //    myData.LP   += 1;
+    //    myData.PP   += 1;
+    //    myData.STOP += 1;
+    //    myData.ZX   += 1;
+    //    myData.FOG  += 1;
+    //    myData.BATT += 1;
   }
+  recieveStructure((byte*)&inData, sizeof(inData));
+  Serial.print ("sizeof(inData) :  ");
+  Serial.print(sizeof(inData));
+  Serial.print ("  inData.count :  ");
+  Serial.print(inData.count);
+  Serial.print ("  inData.res :  ");
+  Serial.println(inData.res);
 
 
-
-
-  delay(1000);
+  delay(500);
 }

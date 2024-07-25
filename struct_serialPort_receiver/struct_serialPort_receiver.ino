@@ -24,32 +24,33 @@ typedef struct struct_Data
 }struct_Data;
  
 struct_Data myData;
+struct_Data myDataSent;
 
+typedef struct struct_In
+{
+ uint8_t count;
+ uint8_t res;
+}struct_In;
+
+struct_In inData;
+
+void sendStructure(byte *structurePointer, int structureLength)
+{
+      SerialPort.write(structurePointer, structureLength);
+}
 void recieveStructure(byte *structurePointer, int structureLength)
 {
   if(SerialPort.available() < sizeof(myData)) return;
   SerialPort.readBytes(structurePointer, structureLength);
-//    Serial.readBytes(structurePointer, structureLength);
-//    Serial.println("Received");
 }
 float countSend;
-
-// char macStr[18];
-//// Copies the sender mac address to a string  
-//  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-//           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-//  Serial.print(macStr);
-
 
 void setup()
 {
   Serial.begin(115200);
   SerialPort.begin(115200);
-//  SerialPort.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);   // Setup Serial Monitor
   delay(10);
    
-  recieveStructure((byte*)&myData, sizeof(myData));
-  
   countSend = millis();
   delay(100);
 }
@@ -90,16 +91,27 @@ void loop()
 //  SerialPort.print(" ");
 //  SerialPort.println (myData.BATT);
 
-//  myData.LG   += 1;
-//  myData.PG   += 1;
-//  myData.LP   += 1;
-//  myData.PP   += 1;
-//  myData.STOP += 1;
-//  myData.ZX   += 1;
-//  myData.FOG  += 1;
-//  myData.BATT += 1;
+
+
+//void *memcpy(void *to, const void *from, size_t numBytes);  // definition of  memcpy func
+//  memcpy(&myDataSent, &myData, sizeof(myDataSent));
+//  
+//  myDataSent.LG   += 1;
+//  myDataSent.PG   += 1;
+//  myDataSent.LP   += 1;
+//  myDataSent.PP   += 1;
+//  myDataSent.STOP += 1;
+//  myDataSent.ZX   += 1;
+//  myDataSent.FOG  += 1;
+//  myDataSent.BATT += 1;
+
+  inData.count = 5;
+  inData.res = 20;
+  sendStructure((byte*)&inData, sizeof(inData));
+  Serial.print ("sizeof(inData) : ");
+  Serial.println (sizeof(inData));
+  
   countSend = millis();
   }
 
-  
 }
